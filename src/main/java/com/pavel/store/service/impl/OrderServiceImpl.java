@@ -1,10 +1,9 @@
 package com.pavel.store.service.impl;
 
 import com.pavel.store.dao.OrderDao;
-import com.pavel.store.dto.OrderDto;
 import com.pavel.store.entity.Order;
 import com.pavel.store.entity.OrderItem;
-import com.pavel.store.mapper.OrderMapper;
+import com.pavel.store.service.OrderItemService;
 import com.pavel.store.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,11 +16,12 @@ import java.util.*;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderDao orderDao;
-
+    private final OrderItemService orderItemService;
 
     @Autowired
-    public OrderServiceImpl(OrderDao orderDao) {
+    public OrderServiceImpl(OrderDao orderDao, OrderItemService orderItemService) {
         this.orderDao = orderDao;
+        this.orderItemService = orderItemService;
     }
 
     @Override
@@ -37,6 +37,12 @@ public class OrderServiceImpl implements OrderService {
             // Set creation time if not provided
             if (newOrder.getCreatedAt() == null) {
                 newOrder.setCreatedAt(LocalDateTime.now());
+            }
+
+            if (newOrder.getItems() != null) {
+                List<OrderItem> orderItems = new ArrayList<>(newOrder.getItems());
+                orderItems = orderItemService.resolveOrCreateOrderItems(orderItems);
+                newOrder.setItems(orderItems);
             }
 
             // Save the order
