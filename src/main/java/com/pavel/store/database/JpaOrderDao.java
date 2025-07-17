@@ -29,4 +29,9 @@ class JpaOrderDao implements OrderDao {
     public Optional<Order> findByOrderNumber(String orderNumber) {
         return orderRepository.findByOrderNumber(orderNumber);
     }
+
+    @Override
+    public boolean existsByCustomerEmailAndCustomerPhone(String customerEmail, String customerPhone) {
+        return orderRepository.existsByCustomerEmailAndCustomerPhone(customerEmail, customerPhone);
+    }
 }

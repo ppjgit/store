@@ -23,4 +23,13 @@ public interface OrderDao {
      * @return an Optional containing the order if found, or empty if not found
      */
     Optional<Order> findByOrderNumber(String orderNumber);
+
+    /**
+     * Check if an order with the given customer email and phone already exists.
+     *
+     * @param customerEmail the customer email to check
+     * @param customerPhone the customer phone to check
+     * @return true if an order with the given email and phone exists, false otherwise
+     */
+    boolean existsByCustomerEmailAndCustomerPhone(String customerEmail, String customerPhone);
 }
