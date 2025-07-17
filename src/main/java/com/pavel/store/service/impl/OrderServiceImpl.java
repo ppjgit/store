@@ -1,9 +1,9 @@
 package com.pavel.store.service.impl;
 
+import com.pavel.store.dao.OrderDao;
 import com.pavel.store.dto.OrderDto;
 import com.pavel.store.entity.Order;
 import com.pavel.store.mapper.OrderMapper;
-import com.pavel.store.repository.OrderRepository;
 import com.pavel.store.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,12 +16,12 @@ import java.util.UUID;
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    private final OrderRepository orderRepository;
+    private final OrderDao orderDao;
     private final OrderMapper orderMapper;
 
     @Autowired
-    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper) {
-        this.orderRepository = orderRepository;
+    public OrderServiceImpl(OrderDao orderDao, OrderMapper orderMapper) {
+        this.orderDao = orderDao;
         this.orderMapper = orderMapper;
     }
 
@@ -42,7 +42,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderMapper.toEntity(orderDto);
 
         // Save the order
-        Order savedOrder = orderRepository.save(order);
+        Order savedOrder = orderDao.save(order);
 
         // Convert back to DTO and return
         return orderMapper.toDto(savedOrder);
@@ -51,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(readOnly = true)
     public Optional<OrderDto> getOrderByOrderNumber(String orderNumber) {
-        return orderRepository.findByOrderNumber(orderNumber)
+        return orderDao.findByOrderNumber(orderNumber)
                 .map(orderMapper::toDto);
     }
 
