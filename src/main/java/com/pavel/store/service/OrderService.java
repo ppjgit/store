@@ -1,11 +1,11 @@
 package com.pavel.store.service;
 
-import com.pavel.store.dto.OrderDto;
+import com.pavel.store.entity.Order;
 
 import java.util.Optional;
 
 public interface OrderService {
-    OrderDto createOrder(OrderDto orderDto);
+    Order createOrder(Order order);
 
-    Optional<OrderDto> getOrderByOrderNumber(String orderNumber);
+    Optional<Order> getOrderByOrderNumber(String orderNumber);
 }

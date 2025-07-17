@@ -11,65 +11,54 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class OrderServiceImpl implements OrderService {
 
     private final OrderDao orderDao;
-    private final OrderMapper orderMapper;
+
 
     @Autowired
-    public OrderServiceImpl(OrderDao orderDao, OrderMapper orderMapper) {
+    public OrderServiceImpl(OrderDao orderDao) {
         this.orderDao = orderDao;
-        this.orderMapper = orderMapper;
     }
 
     @Override
     @Transactional
-    public OrderDto createOrder(OrderDto orderDto) {
-        // Check for duplicate order based on customerEmail and customerPhone
-        if (orderDto.getCustomerEmail() != null && orderDto.getCustomerPhone() != null &&
-                orderDao.existsByCustomerEmailAndCustomerPhone(orderDto.getCustomerEmail(), orderDto.getCustomerPhone())) {
-            throw new IllegalArgumentException("Duplicate order: An order with the same email and phone already exists");
-        }
-
-        // Generate a unique order number if not provided
-        if (orderDto.getOrderNumber() == null || orderDto.getOrderNumber().isEmpty()) {
-            orderDto.setOrderNumber(generateOrderNumber());
-        }
-
-        // Set creation time if not provided
-        if (orderDto.getCreatedAt() == null) {
-            orderDto.setCreatedAt(LocalDateTime.now());
-        }
-
-        // Convert DTO to entity
-        Order order = orderMapper.toEntity(orderDto);
-
-        // Check for duplicate SKUs in order items
-        Set<String> skus = new HashSet<>();
-        for (OrderItem item : order.getItems()) {
-            if (item.getSku() != null && !skus.add(item.getSku())) {
-                throw new IllegalArgumentException("Duplicate SKU: " + item.getSku() + " in order items");
+    public Order createOrder(Order newOrder) {
+        List<Order> duplicates = findDuplicates(newOrder);
+        if (duplicates.isEmpty()) {
+            // Generate a unique order number if not provided
+            if (newOrder.getOrderNumber() == null || newOrder.getOrderNumber().isEmpty()) {
+                newOrder.setOrderNumber(generateOrderNumber());
             }
+
+            // Set creation time if not provided
+            if (newOrder.getCreatedAt() == null) {
+                newOrder.setCreatedAt(LocalDateTime.now());
+            }
+
+            // Save the order
+            return orderDao.save(newOrder);
+        } else {
+            return updateOrder(duplicates.getFirst(), newOrder);
         }
+    }
 
-        // Save the order
-        Order savedOrder = orderDao.save(order);
+    private List<Order> findDuplicates(Order order) {
+        return orderDao.findAllByCustomerEmailAndCustomerPhone(order.getCustomerEmail(), order.getCustomerPhone());
+    }
 
-        // Convert back to DTO and return
-        return orderMapper.toDto(savedOrder);
+    private Order updateOrder(Order existingOrder, Order newOrder) {
+        //TODO update
+        return existingOrder;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<OrderDto> getOrderByOrderNumber(String orderNumber) {
-        return orderDao.findByOrderNumber(orderNumber)
-                .map(orderMapper::toDto);
+    public Optional<Order> getOrderByOrderNumber(String orderNumber) {
+        return orderDao.findByOrderNumber(orderNumber);
     }
 
     private String generateOrderNumber() {

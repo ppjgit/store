@@ -5,6 +5,7 @@ import com.pavel.store.entity.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -31,7 +32,7 @@ class JpaOrderDao implements OrderDao {
     }
 
     @Override
-    public boolean existsByCustomerEmailAndCustomerPhone(String customerEmail, String customerPhone) {
-        return orderRepository.existsByCustomerEmailAndCustomerPhone(customerEmail, customerPhone);
+    public List<Order> findAllByCustomerEmailAndCustomerPhone(String customerEmail, String customerPhone) {
+        return orderRepository.findAllByCustomerEmailAndCustomerPhone(customerEmail, customerPhone);
     }
 }
