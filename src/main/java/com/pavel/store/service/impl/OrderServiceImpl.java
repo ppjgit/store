@@ -45,14 +45,14 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.save(order);
 
         // Convert back to DTO and return
-        return orderMapper.toDTO(savedOrder);
+        return orderMapper.toDto(savedOrder);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<OrderDto> getOrderByOrderNumber(String orderNumber) {
         return orderRepository.findByOrderNumber(orderNumber)
-                .map(orderMapper::toDTO);
+                .map(orderMapper::toDto);
     }
 
     private String generateOrderNumber() {

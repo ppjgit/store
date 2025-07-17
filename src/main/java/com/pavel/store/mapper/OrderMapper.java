@@ -1,7 +1,6 @@
 package com.pavel.store.mapper;
 
 import com.pavel.store.dto.OrderDto;
-import com.pavel.store.dto.OrderItemDto;
 import com.pavel.store.entity.Order;
 import com.pavel.store.entity.OrderItem;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,7 @@ public class OrderMapper {
         this.orderItemMapper = orderItemMapper;
     }
 
-    public OrderDto toDTO(Order entity) {
+    public OrderDto toDto(Order entity) {
         if (entity == null) {
             return null;
         }
@@ -50,7 +49,6 @@ public class OrderMapper {
         }
 
         Order entity = new Order();
-        entity.setId(dto.getId());
         entity.setOrderNumber(dto.getOrderNumber());
         entity.setCustomerName(dto.getCustomerName());
         entity.setCustomerEmail(dto.getCustomerEmail());
@@ -61,7 +59,7 @@ public class OrderMapper {
         if (dto.getItems() != null) {
             List<OrderItem> items = dto.getItems().stream()
                     .map(orderItemMapper::toEntity)
-                    .collect(Collectors.toList());
+                    .toList();
 
             entity.setItems(new ArrayList<>());
             items.forEach(entity::addItem);
@@ -70,16 +68,4 @@ public class OrderMapper {
         return entity;
     }
 
-    public void updateEntityFromDTO(OrderDto dto, Order entity) {
-        if (dto == null || entity == null) {
-            return;
-        }
-
-        entity.setCustomerName(dto.getCustomerName());
-        entity.setCustomerEmail(dto.getCustomerEmail());
-        entity.setCustomerPhone(dto.getCustomerPhone());
-        entity.setTotalAmount(dto.getTotalAmount());
-
-        // Order number and created date typically shouldn't be updated
-    }
 }

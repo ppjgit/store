@@ -13,7 +13,6 @@ public class OrderItemMapper {
         }
 
         OrderItemDto dto = new OrderItemDto();
-        dto.setId(entity.getId());
         dto.setItemName(entity.getItemName());
         dto.setQuantity(entity.getQuantity());
         dto.setPrice(entity.getPrice());
@@ -29,7 +28,6 @@ public class OrderItemMapper {
         }
 
         OrderItem entity = new OrderItem();
-        entity.setId(dto.getId());
         entity.setItemName(dto.getItemName());
         entity.setQuantity(dto.getQuantity());
         entity.setPrice(dto.getPrice());
